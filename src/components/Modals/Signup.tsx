@@ -1,12 +1,46 @@
 import React from "react";
-
+import { useSetRecoilState } from "recoil";
+import { authModalState } from "@/atoms/authModalAtom";
+import { useState } from "react";
+import { auth } from "@/firebase/firebase";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 type SignupProps = {};
 
 const Signup: React.FC<SignupProps> = () => {
+  const setAuthModalState = useSetRecoilState(authModalState);
+  const handleClick = (type: "login" | "signup" | "forgetPassword") => {
+    setAuthModalState((prev) => ({ ...prev, type }));
+  };
+  const router = useRouter();
+  const [inputs, setInputs] = useState({
+    email: "",
+    displayName: "",
+    password: "",
+  });
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth);
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const newUser = await createUserWithEmailAndPassword(
+        inputs.email,
+        inputs.password
+      );
+      if (!newUser) return;
+      router.push("/");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
   return (
     <>
-      <form className="space-y-6 px-6 pb-4">
-        <h3 className="text-xl font-medium text-white">Register to NeedCode</h3>
+      <form className="space-y-6 px-6 pb-4" onSubmit={handleRegister}>
+        <h3 className="text-xl font-medium text-white">signup to NeedCode</h3>
         <div>
           <label
             htmlFor="email"
@@ -20,6 +54,7 @@ const Signup: React.FC<SignupProps> = () => {
             id="email"
             className="border-2 outline-none sm:text-sm rounded-lg w-full p-2.5 block bg-gray-600 border-gray-500 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
             placeholder="examle@gmail.com"
+            onChange={handleChangeInput}
           />
         </div>
         <div>
@@ -31,10 +66,11 @@ const Signup: React.FC<SignupProps> = () => {
           </label>
           <input
             type="text"
-            name="name"
+            name="displayName"
             id="name"
             className="border-2 outline-none sm:text-sm rounded-lg w-full p-2.5 block bg-gray-600 border-gray-500 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
             placeholder="Jhon Doe"
+            onChange={handleChangeInput}
           />
         </div>
         <div>
@@ -50,18 +86,22 @@ const Signup: React.FC<SignupProps> = () => {
             id="password"
             className="border-2 outline-none sm:text-sm rounded-lg w-full p-2.5 block bg-gray-600 border-gray-500 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
             placeholder="****"
+            onChange={handleChangeInput}
           />
         </div>
         <button
           type="submit"
           className="w-full text-white focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-brand-orange hover:bg-brand-orange-s "
         >
-          Register
+          signup
         </button>
 
         <div className="text-sm font-medium text-gray-500">
-          AlReady have an account?
-          <a href="s" className="text-blue-700 hover:underline ml-1">
+          Already have an account?
+          <a
+            className="text-blue-700 hover:underline ml-1 cursor-pointer"
+            onClick={() => handleClick("login")}
+          >
             Login Now
           </a>
         </div>

@@ -1,16 +1,45 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import Navbar from "@/components/navbar";
+import ProblemsTable from "@/components/problemsTable/problemsTable";
+import Topbar from "@/components/Topbar/Topbar";
 export default function Home() {
   return (
     <>
-      <div className="h-screen bg-gradiant-to-b bg-red-500">
-        <div className="max-w-7xl">
-          <Navbar></Navbar>
+      <main className="bg-dark-layer-2 min-h-screen">
+        <Topbar />
+        <h1
+          className="text-2xl text-center text-gray-700 dark:text-gray-400 font-medium
+      uppercase ml-10 mb-5
+      "
+        >
+          &ldquo; Problems Table &rdquo;
+        </h1>
+        <div className="relative overflow-x-auto mx-auto px-6 pb-10">
+          <table className="text-sm text-left text-gray-500 dark:text-gray-400 sm:w-7/12 w-full  max-w-[1200px] mx-auto">
+            <thead className="border-b">
+              <tr>
+                <th scope="col" className="px-1 py-3 w-0 font-medium">
+                  Status
+                </th>
+                <th scope="col" className="px-1 py-3 w-0 font-medium">
+                  Title
+                </th>
+                <th scope="col" className="px-1 py-3 w-0 font-medium">
+                  Difficulty
+                </th>
+                <th scope="col" className="px-1 py-3 w-0 font-medium">
+                  Category
+                </th>
+                <th scope="col" className="px-1 py-3 w-0 font-medium">
+                  Solution
+                </th>
+              </tr>
+            </thead>
+            <ProblemsTable />
+          </table>
         </div>
-
-        <Link href="/auth"> Login</Link>
-      </div>
+      </main>
     </>
   );
 }
