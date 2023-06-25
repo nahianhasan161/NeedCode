@@ -9,18 +9,45 @@ import avatarImg from "@/../public/avatar.png";
 import Logout from "../Buttons/Logout";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
-type TopbarProps = {};
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { BsList } from "react-icons/bs";
+import Timer from "../Timer/Timer";
+type TopbarProps = {
+  problemPage?: boolean;
+};
 
-const Topbar: React.FC<TopbarProps> = () => {
+const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
   const [user] = useAuthState(auth);
   const setAuthModalState = useSetRecoilState(authModalState);
   return (
     <>
       <nav className="bg-dark-layer-1 pb-2 ">
-        <div className="flex justify-between items-center sm:px-6 md:px-12 px-2">
+        <div
+          className={`flex justify-between items-center sm:px-6 md:px-12 px-2 ${
+            problemPage ? "mx-w-[1200px] mx-auto" : ""
+          }`}
+        >
           <Link href="/" className="flex justify-center items-center h-6">
             <Image src={Logo} alt="logo" className="h-full"></Image>
           </Link>
+
+          {problemPage && (
+            <div className="flex items-center gap-4 flex-1 justify-center ">
+              <div className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer">
+                <FiChevronLeft />
+              </div>
+              <Link
+                href={"/"}
+                className={`flex items-center gap-2 font-medium max-w-[170px] text-dark-gray-8 cusros-ponter`}
+              >
+                <BsList />
+                <p>Problem List</p>
+              </Link>
+              <div className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer">
+                <FiChevronRight />
+              </div>
+            </div>
+          )}
           <div className="flex gap-3 pt-1 justify-center items-center ">
             <Link
               href={"/"}
@@ -46,6 +73,7 @@ const Topbar: React.FC<TopbarProps> = () => {
                 Sign In
               </Link>
             )}
+            {problemPage && <Timer />}
             {user && (
               <div className="cursor-pointer relative group ">
                 <Image
