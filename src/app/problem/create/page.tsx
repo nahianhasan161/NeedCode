@@ -1,4 +1,4 @@
-"use client"
+ 
 import React, { ChangeEvent, InputHTMLAttributes, useState } from 'react';
 import Link from 'next/link';
 import {doc,setDoc} from "firebase/firestore";

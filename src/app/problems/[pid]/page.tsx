@@ -1,4 +1,4 @@
-"use client";
+ ;
 
 import Topbar from "@/components/Topbar/Topbar";
 

@@ -1,4 +1,4 @@
-"use client";
+ ;
 import { RecoilRoot } from "recoil";
 import "./globals.css";
 import { Inter } from "next/font/google";
