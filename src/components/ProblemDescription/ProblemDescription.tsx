@@ -1,10 +1,18 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import { BsCheck2Circle } from "react-icons/bs";
 import { AiFillLike, AiFillDislike } from "react-icons/ai";
 import { TiStarOutline } from "react-icons/ti";
-type ProblemDescriptionProps = {};
+import { Problem, ProblemDB } from "@/utills/problems/types/problem";
+import Image from "next/image";
+import { firestore } from "@/firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+type ProblemDescriptionProps = {
+  problem :Problem
+};
 
-const ProblemDescription: React.FC<ProblemDescriptionProps> = () => {
+const ProblemDescription: React.FC<ProblemDescriptionProps> = ({problem}) => {
+  const {currentProblem,loading,difficultyClass} = useGetProblem(problem.id);
+
   return (
     <div className="bg-dark-layer-1">
       {/* TAB */}
@@ -19,100 +27,79 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = () => {
         <div className="w-full">
           <div className="flex space-x-4">
             <div className="flex-1 mr-2 text-lg text-white font-medium">
-              Two Sum
+              {problem.title}
             </div>
           </div>
-          <div className="flex items-center mt-3">
-            <div className="text-olive bg-olive inline-block rounded-[23px] bg-opacity-[.15] px-2.5 py-1 text-sx font-medium capitalize">
-              Easy
-            </div>
-            <div className="rounded p-[3px] ml-4 text-lg transition-colors duration-200  text-dark-green-s">
-              <BsCheck2Circle />
-            </div>
-            <div className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-dark-gray-6">
-              <AiFillLike />
-              <span className="text-xs">120</span>
-            </div>
-            <div className="flex items-center  cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-dark-gray-6">
-              <AiFillDislike />
-              <span className="text-xs">12</span>
-            </div>
-            <div className="ml-4 text-xl cursor-pointer hover:bg-dark-fill-3 rounded p-[3px] transition-colors duration-200 text-dark-gray-6">
-              <TiStarOutline />
-            </div>
-          </div>
+          {currentProblem && !loading && (
+
+<div className="flex items-center mt-3">
+<div className={` inline-block rounded-[23px] bg-opacity-[.15] px-2.5 py-1 text-sx font-medium capitalize ${difficultyClass}`}>
+  {currentProblem.difficulty}
+ 
+</div>
+<div className="rounded p-[3px] ml-4 text-lg transition-colors duration-200  text-dark-green-s">
+  <BsCheck2Circle />
+</div>
+<div className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-dark-gray-6">
+  <AiFillLike />
+  <span className="text-xs">{currentProblem.likes}</span>
+</div>
+<div className="flex items-center  cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-dark-gray-6">
+  <AiFillDislike />
+  <span className="text-xs">{currentProblem.dislikes}</span>
+</div>
+<div className="ml-4 text-xl cursor-pointer hover:bg-dark-fill-3 rounded p-[3px] transition-colors duration-200 text-dark-gray-6">
+  <TiStarOutline />
+</div>
+</div>
+          )}
+         
           {/* Problem Statement[Paragraph] */}
           <div className="text-white text-sm">
-            <p className="pt-3">
-              Given an array of integers <code>nums</code> and an integer
-              <code>target</code>, return
-              <em> indices of the two numbers such that they add up to </em>
-              <code>target</code>.
-            </p>
-            <p className="pt-3">
-              You may assume that each input would have{" "}
-              <strong>exactly one solution</strong> , and you may not use the{" "}
-              <strong>same</strong> element twice.
-            </p>
-            <p className="mt-3">You can return the answer in any order.</p>
+          <div dangerouslySetInnerHTML={
+            {__html:problem.problemStatement}
+          }></div>
+        
+            
           </div>
           {/* Examples */}
-          <div>
-            <p className="font-medium text-white">Example 1:</p>
-            <div className="example-card">
-              <pre>
-                <strong className="text-white">Input:</strong> nums =
-                [2,7,11,15], target = 9
-                <br />
-                <strong>Output:[0,1]</strong> <br />
-                <strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we
-                return [0, 1].
-              </pre>
-            </div>
-          </div>
-          {/* Example 2 */}
-          <div>
-            <p className="font-medium text-white ">Example 2: </p>
-            <div className="example-card">
-              <pre>
-                <strong className="text-white">Input: </strong> nums = [3,2,4],
-                target = 6 <br />
-                <strong>Output:</strong> [1,2] <br />
-                <strong>Explanation:</strong>Because nums[1] + nums[2] == 6, we
-                return [1, 2].
-              </pre>
-            </div>
-          </div>
+          <div className="mt-4">
+            {problem.examples.map((example,index)=>(
+              <div key={example.id}>
 
-          {/* Example 3 */}
-          <div>
-            <p className="font-medium text-white ">Example 3: </p>
-            <div className="example-card">
-              <pre>
-                <strong className="text-white">Input: </strong> nums = [3,3],
-                target = 6
-                <br />
-                <strong>Output:</strong> [0,1] <br />
-              </pre>
-            </div>
+              <p className="font-medium text-white">Example {index+1}:</p>
+              {example.img&&(
+                <Image src={example.img}  alt="example-image" className="mt-1 " width={500} height={100} />
+              )}
+              <div className="example-card">
+                <pre>
+                  <strong className="text-white">Input:</strong>{example.inputText}
+                  <br />
+                  <strong>Output:</strong>{example.outputText} <br />
+
+                  {example.explanation && (
+                  <>
+                  <strong>Explanation:</strong> {example.explanation} 
+                  </>
+                  )
+}
+                </pre>
+              </div>
+              </div>
+            ))}
+            
           </div>
+          {/*End of Examples  */}
+
+
+          
           {/* Constraints */}
-          <div className="my-5">
+          <div className="my-5 pb-4">
             <div className="text-white text-sm font-medium">Constraints:</div>
-            <ul className="text-white ml-5 list-disc">
-              <li className="mt-2">
-                <code>2 ≤ nums.length ≤ 10</code>
-              </li>
+            <ul className="text-white ml-5 list-disc ">
+              <div dangerouslySetInnerHTML={{__html : problem.constraints}} />
 
-              <li className="mt-2">
-                <code>-10 ≤ nums[i] ≤ 10</code>
-              </li>
-              <li className="mt-2">
-                <code>-10 ≤ target ≤ 10</code>
-              </li>
-              <li className="mt-2 text-sm">
-                <strong>Only one valid answer exists.</strong>
-              </li>
+            
             </ul>
           </div>
         </div>
@@ -121,3 +108,33 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = () => {
   );
 };
 export default ProblemDescription;
+
+function useGetProblem(problemId:string){
+  const [currentProblem, setCurrentProblem] = useState<ProblemDB|null>(null);
+  const [loading, setLoading] = useState(false);
+  const [difficultyClass, setDifficultyClass] = useState("");
+  useEffect(() => {
+    const  getProblem = async ()=>{
+      setLoading(true);
+      const docRef = doc(firestore, "problems", problemId );
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+       const problem = docSnap.data();
+       setCurrentProblem({id:docSnap.id, ...problem} as ProblemDB)
+        setDifficultyClass(
+         problem.difficulty == "Easy" ? "bg-olive text-olive" :problem.difficulty == "Medium" ? "bg-dark-yellow text-dark-yellow": "bg-dark-pink text-dark-pink"
+        );
+          console.log(problem)
+      } else {
+        // docSnap.data() will be undefined in this case
+        
+        console.log("No such document!");
+      }
+      
+      console.log("problemID:",problemId);
+      setLoading(false);
+    }
+      getProblem();
+  }, [problemId])
+  return {currentProblem,loading,difficultyClass}
+}

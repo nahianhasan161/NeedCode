@@ -2,10 +2,11 @@ import React from "react";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
 import { useState } from "react";
-import { auth } from "@/firebase/firebase";
+import { auth, firestore } from "@/firebase/firebase";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { setDoc,doc } from "firebase/firestore";
 type SignupProps = {};
 
 const Signup: React.FC<SignupProps> = () => {
@@ -27,14 +28,30 @@ const Signup: React.FC<SignupProps> = () => {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      toast.success("Creating User",{position:"top-center",toastId:"loadingToast"})
       const newUser = await createUserWithEmailAndPassword(
         inputs.email,
         inputs.password
       );
       if (!newUser) return;
+        const userData = {
+          uid:newUser.user.uid,
+          email:newUser.user.email,
+          displayName : inputs.displayName,
+          createdAt : Date.now(),
+          updatedAt : Date.now(),
+          likedProblems:[],
+          dislikedProblems:[],
+          solvedProblems:[],
+          startedProblems:[],
+        }
+      await setDoc(doc(firestore,"users",newUser.user.uid),userData)
       router.push("/");
     } catch (error: any) {
       toast.error(error.message);
+
+    } finally{
+      toast.dismiss("looadingToast");
     }
   };
   return (

@@ -1,12 +1,18 @@
-import { problems } from "@/mockProblems/problems";
+
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { BsCheckCircle, BsYoutube } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import YouTube from "react-youtube";
-type ProblemsTableProps = {};
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import {firestore} from "@/firebase/firebase";
+import { ProblemDB } from "@/utills/problems/types/problem";
+type ProblemsTableProps = {
+  setLoadingProblems:React.Dispatch<React.SetStateAction<boolean>>
+};
 
-const ProblemsTable: React.FC<ProblemsTableProps> = () => {
+const ProblemsTable: React.FC<ProblemsTableProps> = ({setLoadingProblems}) => {
+  const problems = useGetProblems(setLoadingProblems);
   const [youtubePlayer, setYoutubePlayer] = useState({
     isOpen: false,
     videoId: "",
@@ -32,7 +38,15 @@ const ProblemsTable: React.FC<ProblemsTableProps> = () => {
               </th>
               <th className="px-2 py-4 font-medium whitespace-nowrap">
                 {problem.order}.
-                <Link href={`/problems/${problem.id}`}>{problem.title}</Link>
+                {problem.link? (
+                  <Link href={problem.link} 
+                 target="_blank"
+                  >{problem.title}</Link>
+                ) : (
+                  <Link href={`/problems/${problem.id}`}>{problem.title}</Link> 
+                ) }
+                {/*  {problem.order}. */}
+                
               </th>
               <th className="px-2 py-4 font-medium whitespace-nowrap">
                 {problem.difficulty}
@@ -93,3 +107,29 @@ const ProblemsTable: React.FC<ProblemsTableProps> = () => {
   );
 };
 export default ProblemsTable;
+
+function useGetProblems(setLoadingProblems:React.Dispatch<React.SetStateAction<boolean>>){
+  const [problems,setProblem] = useState<ProblemDB[]>([]);
+
+  useEffect(()=>{
+    const getProblems = async function(){
+      setLoadingProblems(true);
+      /* fetching data */
+      const q =  query(collection(firestore, "problems"), orderBy("order", "asc"));
+      
+      const querySnapshot = await getDocs(q);
+      const temp : ProblemDB[] = [];
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        temp.push({id:doc.id,...doc.data()} as ProblemDB) ;
+        setProblem(temp);
+        setLoadingProblems(false);
+      });
+
+    }
+
+    getProblems();
+  },[setLoadingProblems]);
+
+  return problems;
+}
