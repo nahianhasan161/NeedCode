@@ -1,6 +1,6 @@
  
 import React, { Dispatch, SetStateAction } from 'react';
-import { useState } from 'react';
+import {  } from 'react';
 
 
 import {BsArrowLeft, BsArrowRight} from "react-icons/bs"
@@ -15,7 +15,7 @@ type NavBarProps = {
 };
 
 const NavBar:React.FC<NavBarProps> = () => {
-    const [visible,setVisible] = useState(false);
+    let visible = false;
     
     return (
         <div>
@@ -41,16 +41,17 @@ const NavBar:React.FC<NavBarProps> = () => {
   <button
     type="button"
     onClick={()=>
-      setVisible(!visible)
-  }
+      visible = (!visible)
+  } 
     >
       <span>
-      {visible? (<MdNotifications size={30}/>) : (<MdNotificationsNone size={30}/>)}
+      {visible? (<MdNotifications size={30}/>) : (<MdNotificationsNone size={30}/>)} 
+    {/*  <MdNotifications size={30}/> */}
       </span>
   </button>
 </div>
 
-                      <NotificationList isShown={visible}/>
+                     {/*  <NotificationList isShown={visible}/> */}
                         </div>
                     </li>
                 </ul>

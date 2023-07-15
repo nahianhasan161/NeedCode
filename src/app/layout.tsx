@@ -23,10 +23,10 @@ export default function RootLayout({
     <html lang="en">
         
       <body className={inter.className}>
-        <ToastContainer />
         
-        <RecoilRoot>
-          {children}</RecoilRoot>
+        
+        
+          {children}
       </body>
     </html>
     </>
