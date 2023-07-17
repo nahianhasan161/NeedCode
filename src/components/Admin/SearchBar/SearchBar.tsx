@@ -10,7 +10,7 @@ const SearchBar:React.FC<SearchBarProps> = () => {
         <div className='bg-white m-1 md:p-1 md:m-3 rounded-full  shadow-xl'>
 
         <form className='flex flex-col sm:flex-row items-center   md:gap-3'>
-            <div  className='flex items-center  gap-3 border-r-2 sm:px-1 md:p-5 w-full'>
+            <div  className='flex items-center p-3 gap-3 border-r-2 sm:px-1 md:p-5 w-full'>
                 <label htmlFor='search '>
                     <BsSearch/>
                 </label>
@@ -19,7 +19,7 @@ const SearchBar:React.FC<SearchBarProps> = () => {
                  placeholder='Search By Email,Company Name or ListingId...'/>
             </div>
             <div>
-                <button className='hover:text-slate-600 px-2 sm:w-max w-full hover:border-b-2 border-slate-400 transition-all '>Find a Profile</button>
+                <button className='hover:text-slate-600 px-2 sm:w-max w-full hover:border-b-2 border-slate-400 hover:scale-105 transition-all '>Find a Profile</button>
             </div>
         </form>
         </div>

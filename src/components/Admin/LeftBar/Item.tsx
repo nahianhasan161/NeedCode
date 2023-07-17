@@ -12,11 +12,14 @@ const Item:React.FC<ItemProps> = ({title,icon,active}) => {
 
   return (
     <div className=''>
-      <li className={`flex items-center gap-3 sm:gap-3 md:gap-5 my-3 pl-2 sm:pl-5 py-2 text-sm sm:text-md md:text-lg  w-full rounded-l-full ${active? "bg-[#FFB48B]" : "hover:bg-[#FFB48B]"}` }>
+      <li 
+      className={`flex cursor-pointer items-center gap-3 sm:gap-3 hover:scale-105 transition-all
+       md:gap-5 my-3 pl-2 sm:pl-5 py-2 text-sm sm:text-md md:text-lg  w-full rounded-l-full 
+       ${active? "bg-[#FFB48B]" : "hover:bg-[#FFB48B]"}` }>
                        <p>
                         {icon}
-                        {/* <CgProfile/> */}
-                        </p>  <label >{title}</label>
+                        
+                        </p>  <label className='font-bold'>{title}</label>
                     </li>
     </div>
   );
